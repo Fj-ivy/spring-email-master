@@ -18,8 +18,8 @@ spring sends email by three methods
 
 ## 工具以及环境
     1 工具：Intellij Idea
-    2 JDK：1.8
-    3 Spring 4.3.4.release
+    2 JDK：1.8
+    3 Spring 4.3.4.release
     4 maven:3.x
     
 ## 项目结构
