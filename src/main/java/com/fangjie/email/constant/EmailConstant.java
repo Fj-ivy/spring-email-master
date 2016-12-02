@@ -9,4 +9,8 @@ public class EmailConstant {
 
     // 邮件发送协议
     public static final String SMTP = "smtp";
+
+    public static final String CLASSPATH = "classpath";
+
+    public static final String CLASSPATH_RESOURCE_LOADER_CLASS = "classpath.resource.loader.class";
 }

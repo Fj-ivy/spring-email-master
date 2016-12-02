@@ -28,4 +28,10 @@ public interface EmailSenderService {
      * @param vo
      */
     void sendEmailBySimpleTextAndAttachment(EmailVO vo, boolean isHtmlText) throws Exception;
+
+    /**
+     * velocity模版引擎发送
+     * @param vo
+     */
+    void sendEmailByVelocity(EmailVO vo) throws Exception;
 }

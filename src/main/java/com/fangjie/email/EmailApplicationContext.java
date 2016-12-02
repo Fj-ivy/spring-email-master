@@ -5,12 +5,16 @@ import com.fangjie.email.config.MailConfig;
 import com.fangjie.email.config.TemplateConfig;
 import com.fangjie.email.constant.EmailConstant;
 import com.google.common.base.Charsets;
+import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.runtime.RuntimeConstants;
+import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
@@ -31,9 +35,6 @@ public class EmailApplicationContext {
     @Autowired
     private MailConfig mailConfig;
 
-    @Autowired
-    private TemplateConfig templateConfig;
-
     @Bean
     public JavaMailSender mailSender() {
 
@@ -50,16 +51,31 @@ public class EmailApplicationContext {
         // smtp服务器验证
         Properties properties = new Properties();
         // 设置需要身份认证
-        properties.put("mail.smtp.auth",Boolean.TRUE);
+        properties.put("mail.smtp.auth", Boolean.TRUE);
         // 邮件传输协议
-        properties.put("mail.transport.protocol",EmailConstant.SMTP);
+        properties.put("mail.transport.protocol", EmailConstant.SMTP);
         // 始终使用安全设置
-        properties.put("mail.smtp.starttls.enable",Boolean.TRUE);
+        properties.put("mail.smtp.starttls.enable", Boolean.TRUE);
         // 邮件超时时间
-        properties.put("mail.smtp.timeout",EmailConstant.MAIL_SMTP_TIMEOUT);
+        properties.put("mail.smtp.timeout", EmailConstant.MAIL_SMTP_TIMEOUT);
 
         mailSender.setJavaMailProperties(properties);
 
         return mailSender;
+    }
+
+    /**
+     * velocity模版引擎
+     * @return
+     */
+    @Bean
+    public VelocityEngine velocityEngine() {
+        VelocityEngine engine = new VelocityEngine();
+
+        engine.setProperty(RuntimeConstants.RESOURCE_LOADER, EmailConstant.CLASSPATH);
+        engine.setProperty(EmailConstant.CLASSPATH_RESOURCE_LOADER_CLASS, ClasspathResourceLoader.class.getName());
+        engine.init();
+
+        return engine;
     }
 }

@@ -1,6 +1,7 @@
 package com.fangjie.email;
 
 import com.fangjie.email.config.MailConfig;
+import com.fangjie.email.config.TemplateConfig;
 import com.fangjie.email.service.EmailSenderService;
 import com.fangjie.email.vo.EmailVO;
 import org.junit.Before;
@@ -40,6 +41,9 @@ public class ConfigTest extends BaseEmailTest {
         MailConfig mailConfig = context.getBean(MailConfig.class);
         List<String> receivers = mailConfig.getMailReceivers();
         assertEquals(2, receivers.size());
+
+//        TemplateConfig templateConfig = context.getBean(TemplateConfig.class);
+//        System.out.println(templateConfig.getVelocityTemplateName());
     }
 
     @Test
@@ -268,5 +272,11 @@ public class ConfigTest extends BaseEmailTest {
         ClassPathResource resource = new ClassPathResource("/images/attchment.jpg");
         vo.setClassPathResource(new ClassPathResource[]{resource});
         senderService.sendEmailByHTMLText(vo);
+    }
+
+    @Test
+    public void testSendEmailByTemplate() throws Exception {
+        EmailSenderService senderService = context.getBean(EmailSenderService.class);
+        senderService.sendEmailByVelocity(vo);
     }
 }
