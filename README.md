@@ -1,11 +1,27 @@
 # spring-email-master
 spring sends email by three methods
 
+## 介绍
+
+    此项目基于Java配置的方式搭建，此种配置方式比XML配置方式更加强大，类型安全并且易于重构
+    建议在开发中优先使用基于Java去配置，如本实例中的 EmailApplicationContext类
+
+    Spring Email抽象核心接口MailSender，其实现类JavaMailSenderImpl,在其中配置邮件
+    服务器host,pssword,协议等 。。。。。
+
+    1.发送简单的消息
+        SimpleMailMessage:发送简单的消息
+    2.发送丰富的消息(比如带有附件，内连图片)
+        MineMessage：发送带附件等消息，通过mailSender.createMimeMassage()创建实例
+    3.使用模版(Velocity/ Thymeleaf)
+        具体参照本实例中的代码
+
 ## 工具以及环境
-    1 工具：Intellij Idea
+    1 工具：Intellij Idea
     2 JDK：1.8
     3 Spring 4.3.4.release
     4 maven:3.x
+    
 ## 项目结构
 
     src
@@ -24,7 +40,7 @@ spring sends email by three methods
          thymeleaf:thymeleaf模版文件
      test
           单元测试
-  
+
 
 ## service方法介绍
 
