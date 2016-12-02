@@ -1,5 +1,8 @@
 package com.fangjie.email.vo;
 
+import org.springframework.core.io.ClassPathResource;
+import sun.tools.java.ClassPath;
+
 import java.io.File;
 
 /**
@@ -40,6 +43,11 @@ public class EmailVO {
      * 邮件附件
      */
     private File[] attachFile;
+
+    /**
+     * 内连内容,内嵌到html之中
+     */
+    private ClassPathResource[] classPathResource;
 
     public String getSender() {
         return sender;
@@ -95,5 +103,13 @@ public class EmailVO {
 
     public void setBcc(String[] bcc) {
         this.bcc = bcc;
+    }
+
+    public ClassPathResource[] getClassPathResource() {
+        return classPathResource;
+    }
+
+    public void setClassPathResource(ClassPathResource[] classPathResource) {
+        this.classPathResource = classPathResource;
     }
 }
