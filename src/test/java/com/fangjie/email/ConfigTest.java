@@ -279,4 +279,10 @@ public class ConfigTest extends BaseEmailTest {
         EmailSenderService senderService = context.getBean(EmailSenderService.class);
         senderService.sendEmailByVelocity(vo);
     }
+
+    @Test
+    public void testSendEmailByThymeleaf() throws Exception {
+        EmailSenderService senderService = context.getBean(EmailSenderService.class);
+        senderService.sendEmailByThymeleaf(vo);
+    }
 }

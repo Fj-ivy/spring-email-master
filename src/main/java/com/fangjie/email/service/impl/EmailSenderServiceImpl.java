@@ -16,6 +16,8 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.spring4.SpringTemplateEngine;
 
 import javax.mail.internet.MimeMessage;
 import java.io.File;
@@ -37,6 +39,9 @@ public class EmailSenderServiceImpl implements EmailSenderService {
 
     @Autowired
     private TemplateConfig templateConfig;
+
+    @Autowired
+    private SpringTemplateEngine springTemplateEngine;
 
     @Override
     public void sendEmailBySimpleText(EmailVO vo) {
@@ -144,6 +149,30 @@ public class EmailSenderServiceImpl implements EmailSenderService {
         helper.setText(sw.toString(), true);
 
 
+        mailSender.send(mimeMessage);
+    }
+
+    @Override
+    public void sendEmailByThymeleaf(EmailVO vo) throws Exception {
+        MimeMessage mimeMessage = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
+        if (vo.getCc().length > 0) {
+            helper.setCc(vo.getCc());
+        }
+        if (vo.getBcc().length > 0) {
+            helper.setBcc(vo.getBcc());
+        }
+        helper.setFrom(vo.getSender());
+        helper.setTo(vo.getReceivers());
+        helper.setSubject(vo.getSubject());
+        helper.setSentDate(new Date());
+
+        Context context = new Context();
+        context.setVariable("name", "fangjie");
+        context.setVariable("text", "使用Thymeleaf构建Email消息");
+        String content = springTemplateEngine.process(templateConfig.getThymeleafTemplateName(),
+                context);
+        helper.setText(content, true);
         mailSender.send(mimeMessage);
     }
 }

@@ -31,7 +31,16 @@ public interface EmailSenderService {
 
     /**
      * velocity模版引擎发送
+     *
      * @param vo
      */
     void sendEmailByVelocity(EmailVO vo) throws Exception;
+
+    /**
+     * thymeleaf模版引擎
+     *
+     * @param vo
+     * @throws Exception
+     */
+    void sendEmailByThymeleaf(EmailVO vo) throws Exception;
 }

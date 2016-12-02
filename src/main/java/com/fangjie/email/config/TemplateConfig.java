@@ -13,11 +13,22 @@ public class TemplateConfig {
     @Value("${velocity.vm.name}")
     private String velocityTemplateName ;
 
+    @Value("${thymeleaf.html.name}")
+    private String thymeleafTemplateName;
+
     public String getVelocityTemplateName() {
         return velocityTemplateName;
     }
 
     public void setVelocityTemplateName(String velocityTemplateName) {
         this.velocityTemplateName = velocityTemplateName;
+    }
+
+    public String getThymeleafTemplateName() {
+        return thymeleafTemplateName;
+    }
+
+    public void setThymeleafTemplateName(String thymeleafTemplateName) {
+        this.thymeleafTemplateName = thymeleafTemplateName;
     }
 }

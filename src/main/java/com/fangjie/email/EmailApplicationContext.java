@@ -17,6 +17,8 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.thymeleaf.spring4.SpringTemplateEngine;
+import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
 import java.nio.charset.Charset;
 import java.util.Properties;
@@ -66,6 +68,7 @@ public class EmailApplicationContext {
 
     /**
      * velocity模版引擎
+     *
      * @return
      */
     @Bean
@@ -75,7 +78,27 @@ public class EmailApplicationContext {
         engine.setProperty(RuntimeConstants.RESOURCE_LOADER, EmailConstant.CLASSPATH);
         engine.setProperty(EmailConstant.CLASSPATH_RESOURCE_LOADER_CLASS, ClasspathResourceLoader.class.getName());
         engine.init();
-
         return engine;
+    }
+
+    /**
+     * 加载thymeleaf模版
+     *
+     * @return
+     */
+    @Bean
+    public ClassLoaderTemplateResolver emailTemplateResolver() {
+        ClassLoaderTemplateResolver resolver = new ClassLoaderTemplateResolver();
+        resolver.setPrefix("/");
+        resolver.setTemplateMode("HTML5");
+        resolver.setCharacterEncoding(Charsets.UTF_8.toString());
+        return resolver;
+    }
+
+    @Bean
+    public SpringTemplateEngine springTemplateEngine() {
+        SpringTemplateEngine springTemplateEngine = new SpringTemplateEngine();
+        springTemplateEngine.addTemplateResolver(emailTemplateResolver());
+        return springTemplateEngine;
     }
 }
