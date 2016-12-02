@@ -20,19 +20,25 @@ public class EmailSenderServiceImpl implements EmailSenderService {
 
     @Override
     public void sendEmailBySimpleText(EmailVO vo) {
+        // 发送Email消息实例
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
+        // 抄送
         if (vo.getCc().length > 0){
             simpleMailMessage.setCc(vo.getCc());
         }
-
+        // 密送
         if (vo.getBcc().length > 0){
             simpleMailMessage.setBcc(vo.getBcc());
         }
         // 设置发送时间
         simpleMailMessage.setSentDate(new Date());
+        // 邮件发送者
         simpleMailMessage.setFrom(vo.getSender());
+        // 邮件接受者
         simpleMailMessage.setTo(vo.getReceivers());
+        // 邮件主题
         simpleMailMessage.setSubject(vo.getSubject());
+        // 邮件内容
         simpleMailMessage.setText(vo.getEmailContent());
 
         mailSender.send(simpleMailMessage);
