@@ -42,7 +42,7 @@ public class ThymeleafStrategy implements MailStrategy {
 
     private ClassLoaderTemplateResolver emailTemplateResolver() {
         ClassLoaderTemplateResolver resolver = new ClassLoaderTemplateResolver();
-        resolver.setPrefix("/thymeleaf");
+        resolver.setPrefix("/");
         resolver.setTemplateMode("HTML5");
         resolver.setCharacterEncoding(Charsets.UTF_8.toString());
         return resolver;

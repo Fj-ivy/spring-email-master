@@ -28,8 +28,8 @@ public abstract class BaseEmailTest {
         vo.setBcc(new String[]{});
         vo.setSubject("[主题][致亲爱的一封邮件]");
         vo.setEmailContent("<h1>走不去的是人生，忘不了的是真情</h1>");
-        vo.setReceivers(new String[]{"632194101@qq.com"});
-        vo.setSender("fangjiewd@126.com");
+        vo.setReceivers(new String[]{"631294101@qq.com"});
+        vo.setSender("fangjiewd@163.com");
     }
 
 }
