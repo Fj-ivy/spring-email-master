@@ -1,6 +1,8 @@
 package com.fangjie.email.service;
 
 import com.fangjie.email.vo.EmailVO;
+import org.apache.velocity.VelocityContext;
+import org.thymeleaf.context.Context;
 
 /**
  * Created by fangjie04 on 2016/12/1.
@@ -13,7 +15,7 @@ public interface EmailSenderService {
      *
      * @param vo
      */
-    void sendEmailBySimpleText(EmailVO vo);
+    void sendEmailBySimpleText(EmailVO vo) throws Exception;
 
     /**
      * 发送html格式的消息
@@ -34,7 +36,7 @@ public interface EmailSenderService {
      *
      * @param vo
      */
-    void sendEmailByVelocity(EmailVO vo) throws Exception;
+    void sendEmailByVelocity(EmailVO vo, VelocityContext ctx) throws Exception;
 
     /**
      * thymeleaf模版引擎
@@ -42,5 +44,6 @@ public interface EmailSenderService {
      * @param vo
      * @throws Exception
      */
-    void sendEmailByThymeleaf(EmailVO vo) throws Exception;
+    void sendEmailByThymeleaf(EmailVO vo, Context context) throws Exception;
+
 }

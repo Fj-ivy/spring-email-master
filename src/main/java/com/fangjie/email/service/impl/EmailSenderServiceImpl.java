@@ -44,29 +44,31 @@ public class EmailSenderServiceImpl implements EmailSenderService {
     private SpringTemplateEngine springTemplateEngine;
 
     @Override
-    public void sendEmailBySimpleText(EmailVO vo) {
+    public void sendEmailBySimpleText(EmailVO vo)throws Exception {
         // 发送Email消息实例
-        SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
+        // SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
+        MimeMessage mimeMessage = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage,true);
         // 抄送
         if (vo.getCc().length > 0) {
-            simpleMailMessage.setCc(vo.getCc());
+            helper.setCc(vo.getCc());
         }
         // 密送
         if (vo.getBcc().length > 0) {
-            simpleMailMessage.setBcc(vo.getBcc());
+            helper.setBcc(vo.getBcc());
         }
         // 设置发送时间
-        simpleMailMessage.setSentDate(new Date());
+        helper.setSentDate(new Date());
         // 邮件发送者
-        simpleMailMessage.setFrom(vo.getSender());
+        helper.setFrom(vo.getSender());
         // 邮件接受者
-        simpleMailMessage.setTo(vo.getReceivers());
+        helper.setTo(vo.getReceivers());
         // 邮件主题
-        simpleMailMessage.setSubject(vo.getSubject());
+        helper.setSubject(vo.getSubject());
         // 邮件内容
-        simpleMailMessage.setText(vo.getEmailContent());
+        helper.setText(vo.getEmailContent());
 
-        mailSender.send(simpleMailMessage);
+        mailSender.send(mimeMessage);
     }
 
     @Override
@@ -126,7 +128,7 @@ public class EmailSenderServiceImpl implements EmailSenderService {
     }
 
     @Override
-    public void sendEmailByVelocity(EmailVO vo) throws Exception {
+    public void sendEmailByVelocity(EmailVO vo,VelocityContext ctx) throws Exception {
 
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
@@ -140,10 +142,8 @@ public class EmailSenderServiceImpl implements EmailSenderService {
         helper.setTo(vo.getReceivers());
         helper.setSubject(vo.getSubject());
         helper.setSentDate(new Date());
-        VelocityContext ctx = new VelocityContext();
-
         Template template = velocityEngine.getTemplate(templateConfig.getVelocityTemplateName(), Charsets.UTF_8.toString());
-        ctx.put("name", "Jack");
+
         StringWriter sw = new StringWriter();
         template.merge(ctx, sw);
         helper.setText(sw.toString(), true);
@@ -153,7 +153,7 @@ public class EmailSenderServiceImpl implements EmailSenderService {
     }
 
     @Override
-    public void sendEmailByThymeleaf(EmailVO vo) throws Exception {
+    public void sendEmailByThymeleaf(EmailVO vo,Context context) throws Exception {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
         if (vo.getCc().length > 0) {
@@ -167,9 +167,6 @@ public class EmailSenderServiceImpl implements EmailSenderService {
         helper.setSubject(vo.getSubject());
         helper.setSentDate(new Date());
 
-        Context context = new Context();
-        context.setVariable("name", "fangjie");
-        context.setVariable("text", "使用Thymeleaf构建Email消息");
         String content = springTemplateEngine.process(templateConfig.getThymeleafTemplateName(),
                 context);
         helper.setText(content, true);
