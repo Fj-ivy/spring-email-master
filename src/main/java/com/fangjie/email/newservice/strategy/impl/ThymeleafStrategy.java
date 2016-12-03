@@ -19,8 +19,14 @@ import javax.swing.*;
 
 public class ThymeleafStrategy implements MailStrategy {
 
+    private SpringTemplateEngine springTemplateEngine;
     private Context context;
     private String templateName;
+
+    public ThymeleafStrategy setSpringTemplateEngine(SpringTemplateEngine springTemplateEngine) {
+        this.springTemplateEngine = springTemplateEngine;
+        return this;
+    }
 
     public ThymeleafStrategy(Context context, String templateName) {
         this.context = context;
@@ -34,23 +40,7 @@ public class ThymeleafStrategy implements MailStrategy {
 
     @Override
     public String message(EmailVO vo) {
-        SpringTemplateEngine springTemplateEngine = this.springTemplateEngine();
-        String content = springTemplateEngine.process(this.templateName, context);
+        String content = this.springTemplateEngine.process(this.templateName, context);
         return content;
-    }
-
-
-    private ClassLoaderTemplateResolver emailTemplateResolver() {
-        ClassLoaderTemplateResolver resolver = new ClassLoaderTemplateResolver();
-        resolver.setPrefix("/");
-        resolver.setTemplateMode("HTML5");
-        resolver.setCharacterEncoding(Charsets.UTF_8.toString());
-        return resolver;
-    }
-
-    private SpringTemplateEngine springTemplateEngine() {
-        SpringTemplateEngine springTemplateEngine = new SpringTemplateEngine();
-        springTemplateEngine.addTemplateResolver(emailTemplateResolver());
-        return springTemplateEngine;
     }
 }

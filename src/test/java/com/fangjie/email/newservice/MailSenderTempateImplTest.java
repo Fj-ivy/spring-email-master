@@ -10,8 +10,10 @@ import com.fangjie.email.newservice.template.impl.MailSenderTemplateImpl;
 import com.fangjie.email.service.EmailSenderService;
 import com.fangjie.email.type.EmailType;
 import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.VelocityEngine;
 import org.junit.Test;
 import org.thymeleaf.context.Context;
+import org.thymeleaf.spring4.SpringTemplateEngine;
 
 /**
  * Created by fangjie04 on 2016/12/3.
@@ -100,18 +102,22 @@ public class MailSenderTempateImplTest extends BaseEmailTest {
     @Test
     public void testSendVelocity() throws Exception {
         MailSenderTemplate mailSenderTemplate = context.getBean(MailSenderTemplateImpl.class);
+        VelocityEngine velocityEngine = context.getBean(VelocityEngine.class);
         VelocityContext ctx = new VelocityContext();
         ctx.put("name", "Jack");
-        mailSenderTemplate.setStrategy(new VelocityStrategy(ctx,"/velocity/velocityTemplate.vm")).sendMail(vo);
+        mailSenderTemplate.setStrategy(new VelocityStrategy(ctx, "/velocity/velocityTemplate.vm")
+                .setVelocityEngine(velocityEngine)).sendMail(vo);
     }
 
     @Test
     public void testSendThymeleaf() throws Exception {
         MailSenderTemplate mailSenderTemplate = context.getBean(MailSenderTemplateImpl.class);
+        SpringTemplateEngine springTemplateEngine = context.getBean(SpringTemplateEngine.class);
         Context context = new Context();
         context.setVariable("name", "fangjie");
         context.setVariable("text", "使用Thymeleaf构建Email消息");
-        mailSenderTemplate.setStrategy(new ThymeleafStrategy(context,"/thymeleaf/emailTemplate.html")).sendMail(vo);
+        mailSenderTemplate.setStrategy(new ThymeleafStrategy(context, "/thymeleaf/emailTemplate.html")
+                .setSpringTemplateEngine(springTemplateEngine)).sendMail(vo);
     }
 
 }

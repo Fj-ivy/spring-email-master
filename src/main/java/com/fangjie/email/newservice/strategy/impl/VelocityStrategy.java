@@ -17,13 +17,19 @@ import java.io.StringWriter;
 
 /**
  * Created by fangjie04 on 2016/12/3.
+ * <p>
+ * 优化：让使用者更加方便，传入VelocityEngine
  */
-
-
 public class VelocityStrategy implements MailStrategy {
 
+    private VelocityEngine velocityEngine;
     private VelocityContext velocityContext;
     private String templateName;
+
+    public VelocityStrategy setVelocityEngine(VelocityEngine velocityEngine) {
+        this.velocityEngine = velocityEngine;
+        return this;
+    }
 
     // 两种注入方式
     public VelocityStrategy(VelocityContext velocityContext, String templateName) {
@@ -38,17 +44,9 @@ public class VelocityStrategy implements MailStrategy {
 
     @Override
     public String message(EmailVO vo) {
-        Template template = this.ve().getTemplate(this.templateName, Charsets.UTF_8.toString());
+        Template template = this.velocityEngine.getTemplate(this.templateName, Charsets.UTF_8.toString());
         StringWriter sw = new StringWriter();
         template.merge(velocityContext, sw);
         return sw.toString();
-    }
-
-    private VelocityEngine ve() {
-        VelocityEngine ve = new VelocityEngine();
-        ve.setProperty(RuntimeConstants.RESOURCE_LOADER, EmailConstant.CLASSPATH);
-        ve.setProperty(EmailConstant.CLASSPATH_RESOURCE_LOADER_CLASS, ClasspathResourceLoader.class.getName());
-        ve.init();
-        return ve;
     }
 }
