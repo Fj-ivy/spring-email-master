@@ -74,7 +74,6 @@ public class EmailApplicationContext {
     @Bean
     public VelocityEngine velocityEngine() {
         VelocityEngine engine = new VelocityEngine();
-
         engine.setProperty(RuntimeConstants.RESOURCE_LOADER, EmailConstant.CLASSPATH);
         engine.setProperty(EmailConstant.CLASSPATH_RESOURCE_LOADER_CLASS, ClasspathResourceLoader.class.getName());
         engine.init();
@@ -82,7 +81,7 @@ public class EmailApplicationContext {
     }
 
     /**
-     * 加载thymeleaf模版
+     * 加载thymeleaf模版,从类路径下去加载
      *
      * @return
      */
@@ -98,6 +97,7 @@ public class EmailApplicationContext {
     @Bean
     public SpringTemplateEngine springTemplateEngine() {
         SpringTemplateEngine springTemplateEngine = new SpringTemplateEngine();
+        // 将加载模版类注册到springTemplateEngine中，在加载Thymeleaf时使用
         springTemplateEngine.addTemplateResolver(emailTemplateResolver());
         return springTemplateEngine;
     }

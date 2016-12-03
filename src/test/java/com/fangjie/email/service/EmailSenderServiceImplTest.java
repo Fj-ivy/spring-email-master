@@ -1,13 +1,15 @@
-package com.fangjie.email;
+package com.fangjie.email.service;
 
+import com.fangjie.email.BaseEmailTest;
+import com.fangjie.email.EmailApplicationContext;
 import com.fangjie.email.config.MailConfig;
-import com.fangjie.email.config.TemplateConfig;
-import com.fangjie.email.service.EmailSenderService;
 import com.fangjie.email.vo.EmailVO;
+import org.apache.velocity.VelocityContext;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.core.io.ClassPathResource;
+import org.thymeleaf.context.Context;
 
 import java.io.File;
 import java.util.List;
@@ -19,35 +21,17 @@ import static org.junit.Assert.assertTrue;
  * Created by fangjie04 on 2016/12/1.
  */
 
-public class ConfigTest extends BaseEmailTest {
-
-    private AnnotationConfigApplicationContext context = null;
-    private EmailVO vo;
-
-    @Before
-    public void setUp() {
-        context = new AnnotationConfigApplicationContext(EmailApplicationContext.class);
-        vo = new EmailVO();
-        vo.setCc(new String[]{});
-        vo.setBcc(new String[]{});
-        vo.setSubject("[主题][致亲爱的一封邮件]");
-        vo.setEmailContent("走不去的是人生，忘不了的是真情");
-        vo.setReceivers(new String[]{"631294101@qq.com"});
-        vo.setSender("fangjiewd@126.com");
-    }
+public class EmailSenderServiceImplTest extends BaseEmailTest {
 
     @Test
     public void testConfig() {
         MailConfig mailConfig = context.getBean(MailConfig.class);
         List<String> receivers = mailConfig.getMailReceivers();
         assertEquals(2, receivers.size());
-
-//        TemplateConfig templateConfig = context.getBean(TemplateConfig.class);
-//        System.out.println(templateConfig.getVelocityTemplateName());
     }
 
     @Test
-    public void testSendEmail() {
+    public void testSendEmail() throws Exception {
         EmailSenderService senderService = context.getBean(EmailSenderService.class);
         senderService.sendEmailBySimpleText(vo);
     }
@@ -192,7 +176,7 @@ public class ConfigTest extends BaseEmailTest {
                 "</html>";
         vo.setEmailContent(text);
 
-        String path = ConfigTest.class.getResource("/images/attchment.jpg").getPath();
+        String path = EmailSenderServiceImplTest.class.getResource("/images/attchment.jpg").getPath();
         File[] f = new File[]{new File(path)};
         vo.setAttachFile(f);
         senderService.sendEmailBySimpleTextAndAttachment(vo, true);
@@ -277,12 +261,17 @@ public class ConfigTest extends BaseEmailTest {
     @Test
     public void testSendEmailByTemplate() throws Exception {
         EmailSenderService senderService = context.getBean(EmailSenderService.class);
-        senderService.sendEmailByVelocity(vo);
+        VelocityContext ctx = new VelocityContext();
+        ctx.put("name", "Jack");
+        senderService.sendEmailByVelocity(vo, ctx);
     }
 
     @Test
     public void testSendEmailByThymeleaf() throws Exception {
         EmailSenderService senderService = context.getBean(EmailSenderService.class);
-        senderService.sendEmailByThymeleaf(vo);
+        Context context = new Context();
+        context.setVariable("name", "fangjie");
+        context.setVariable("text", "使用Thymeleaf构建Email消息");
+        senderService.sendEmailByThymeleaf(vo, context);
     }
 }
