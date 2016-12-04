@@ -20,6 +20,13 @@ public interface MailSenderTemplate {
     void sendMail(EmailVO vo) throws MessagingException;
 
     /**
+     * 异步发送邮件
+     * @param vo
+     * @throws MessagingException
+     */
+    void sendMailSync(EmailVO vo) throws MessagingException;
+
+    /**
      * 设置邮件发送策略
      *
      * @param strategy

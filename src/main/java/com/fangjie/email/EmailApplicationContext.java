@@ -15,8 +15,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.thymeleaf.spring4.SpringTemplateEngine;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
@@ -100,5 +102,15 @@ public class EmailApplicationContext {
         // 将加载模版类注册到springTemplateEngine中，在加载Thymeleaf时使用
         springTemplateEngine.addTemplateResolver(emailTemplateResolver());
         return springTemplateEngine;
+    }
+
+    @Bean
+    public ThreadPoolTaskExecutor threadPoolTaskExecutor(){
+        ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
+        threadPoolTaskExecutor.setCorePoolSize(EmailConstant.CORE_POOL_SIZE);
+        threadPoolTaskExecutor.setMaxPoolSize(EmailConstant.MAX_POOL_SIZE);
+        threadPoolTaskExecutor.setWaitForTasksToCompleteOnShutdown(Boolean.TRUE);
+        threadPoolTaskExecutor.setKeepAliveSeconds(EmailConstant.KEEP_ALIVE_SECONDS);
+        return threadPoolTaskExecutor;
     }
 }

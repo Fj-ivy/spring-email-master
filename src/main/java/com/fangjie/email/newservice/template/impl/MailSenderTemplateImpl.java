@@ -6,6 +6,8 @@ import com.fangjie.email.newservice.template.MailSenderTemplate;
 import com.fangjie.email.type.EmailType;
 import com.fangjie.email.vo.EmailVO;
 import com.google.common.base.Charsets;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
@@ -13,6 +15,7 @@ import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
 import javax.mail.MessagingException;
@@ -26,10 +29,15 @@ import java.util.Date;
 @Component
 public class MailSenderTemplateImpl implements MailSenderTemplate {
 
+    private Logger logger = LoggerFactory.getLogger(MailSenderTemplateImpl.class);
+
     protected static final EmailType DEFAULT_EMAIL_TYPE = EmailType.TEXT;
 
     @Autowired
     private JavaMailSender mailSender;
+
+    @Autowired
+    private ThreadPoolTaskExecutor threadPoolTaskExecutor;
 
     private MailStrategy strategy;
 
@@ -75,6 +83,22 @@ public class MailSenderTemplateImpl implements MailSenderTemplate {
 
         mailSender.send(mimeMessage);
 
+    }
+
+    @Override
+    public void sendMailSync(final EmailVO vo) throws MessagingException {
+        final MailSenderTemplate mailSenderTemplate = new MailSenderTemplateImpl();
+        threadPoolTaskExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    mailSenderTemplate.sendMail(vo);
+                } catch (MessagingException e) {
+                    logger.error("[failed because of ]" + e);
+                    System.out.println("Failed .....");
+                }
+            }
+        });
     }
 
     private void emailMessage(MimeMessageHelper helper, EmailVO vo) throws MessagingException {
