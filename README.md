@@ -86,3 +86,101 @@ spring sends email by three methods
     使使用者更加方便的使用
 
     现在只是简单的实现每种方式的发送的邮件，期待后续优化。
+
+
+### 优化之后（newservice中）
+
+public interface MailSenderTemplate {
+
+    /**
+     * 发送邮件
+     *
+     * @param vo
+     */
+    void sendMail(EmailVO vo) throws MessagingException;
+
+    /**
+     * 设置邮件发送策略
+     *
+     * @param strategy
+     * @return
+     */
+    public MailSenderTemplateImpl setStrategy(MailStrategy strategy);
+}
+
+ 邮件发送只定义了两个接口，一个是发送邮件接口，一个是指定邮件发送的策略
+
+ 邮件发送使用模版方法，减少大量的重复代码
+
+ public void sendMail(EmailVO vo) throws MessagingException {
+
+         MimeMessage mimeMessage = mailSender.createMimeMessage();
+
+         // 第二个参数表示这个是mulipart类型的
+         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, Charsets.UTF_8.toString());
+         boolean isHtmlText = true;
+
+         if (this.strategy instanceof TextStrategy) {
+             isHtmlText = false;
+         }
+
+         this.emailMessage(helper, vo);
+
+         // true表示发送的是html消息
+         helper.setText(this.sendContent(vo), isHtmlText);
+
+         // 显示是内置图片等
+         if (vo.getClassPathResource() != null && vo.getClassPathResource().length > 0) {
+             for (ClassPathResource resource : vo.getClassPathResource()) {
+                 String fileName = resource.getFilename();
+                 helper.addInline(fileName.substring(0, fileName.lastIndexOf(".")), resource);
+             }
+         }
+
+         // 附件
+         if (vo.getAttachFile() != null && vo.getAttachFile().length > 0) {
+             for (File file : vo.getAttachFile()) {
+                 FileSystemResource resource = new FileSystemResource(file);
+                 helper.addAttachment(file.getName(), resource);
+             }
+         }
+
+         mailSender.send(mimeMessage);
+
+     }
+
+     private void emailMessage(MimeMessageHelper helper, EmailVO vo) throws MessagingException {
+         if (vo.getCc().length > 0) {
+             helper.setCc(vo.getCc());
+         }
+         if (vo.getBcc().length > 0) {
+             helper.setBcc(vo.getBcc());
+         }
+
+         helper.setFrom(vo.getSender());
+         helper.setTo(vo.getReceivers());
+         helper.setSubject(vo.getSubject());
+         helper.setSentDate(new Date());
+     }
+
+     private String sendContent(EmailVO vo) {
+         return this.strategy.message(vo).toString();
+     }
+
+ 发送策略，有TextStrategy,HtmlStrategy,VelocityStrategy,ThymeleafStrategy,都实现
+ 了MailStrategy接口，分别是发送简单文本，HTML类型，使用Velocity模版，使用Thymeleaf模板，
+
+ public interface MailStrategy {
+
+     String message(EmailVO vo);
+ }
+
+ 实现类可以参考实现类中代码。
+
+ 如何使用呢？
+
+ 请看单元测试 MailSenderTempateImplTest
+
+ 例如：
+    MailSenderTemplate template = context.getBean(MailSenderTemplateImpl.class);
+    template.setStrategy(new TextStrategy()).sendMail(vo);
